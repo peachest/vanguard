@@ -1,0 +1,96 @@
+{
+  "name": "vangard",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "description": "An extensible visual editor",
+  "keywords": [
+    "visual",
+    "editor"
+  ],
+  "author": {
+    "name": "peachest",
+    "email": "1938913473@qq.com"
+  },
+  "homepage": "https://github.com/peachest/vanguard",
+  "bugs": "https://github.com/peachest/vanguard/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/peachest/vanguard"
+  },
+  "type": "module",
+  "files": [
+    "README.md",
+    "README_zh-Hans.md"
+  ],
+  "resolutions": {
+    "typescript": "5.1.6"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@storybook/addon-essentials": "7.0.25",
+    "@storybook/addon-interactions": "7.0.25",
+    "@storybook/addon-links": "7.0.25",
+    "@storybook/blocks": "7.0.25",
+    "@storybook/preset-create-react-app": "7.0.25",
+    "@storybook/react": "7.0.25",
+    "@storybook/react-webpack5": "7.0.25",
+    "@storybook/testing-library": "0.0.14-next.2",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.4.3",
+    "@types/jest": "^29.5.2",
+    "@types/lodash-es": "^4.17.7",
+    "@types/node": "^20.3.3",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
+    "@typescript-eslint/eslint-plugin": "^5.54.1",
+    "@typescript-eslint/parser": "^5.54.1",
+    "acorn-jsx": "^5.3.2",
+    "babel-plugin-named-exports-order": "0.0.2",
+    "eslint": "^8.43.0",
+    "eslint-config-prettier": "^8.7.0",
+    "eslint-config-react-app": "^7.0.1",
+    "eslint-plugin-storybook": "^0.6.12",
+    "eslint-plugin-tsdoc": "^0.2.17",
+    "eslint-webpack-plugin": "^4.0.1",
+    "prop-types": "15.8.1",
+    "storybook": "7.0.25",
+    "tsconfig-paths-webpack-plugin": "^4.0.1",
+    "tslib": "^2.5.0",
+    "type-fest": "^3.6.1",
+    "webpack": "5.88.1"
+  },
+  "dependencies": {
+    "@antv/x6": "^2.11.1",
+    "@antv/x6-react-shape": "^2.2.2",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@fontsource/roboto": "^5.0.2",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.13.4",
+    "ahooks": "^3.7.8",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router": "^6.11.2",
+    "react-router-dom": "^6.11.2",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^3.3.2",
+    "zustand": "^4.3.9"
+  },
+  "scripts": {
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "rm -rf docs && storybook build -o docs"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
