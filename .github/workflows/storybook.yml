@@ -1,41 +1,82 @@
-name: StoryBookDeployer # Actions 名字
+name: storyBook-pages-build-deployment
+run-name: Build and deploy storybook pages
 on: # 触发条件
   push:
-    branches:
-      - master
-      - dev
+    branches: [
+      "main",
+      "dev",
+    ]
+  pull_request:
+    branches: [ "main" ]
+  # 允许手动触发
+  workflow_dispatch:
+
+# 配置 GITHUB_TOKEN 权限
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 该工作流同时只能运行一个。有多个正在排队的工作流时，只有最新加入队列中的会被响应，正在运行中的工作流会继续运行直至完成
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+# 工作流环境变量
+env:
+  STORY_BOOK_DOCS_DIR: ./docs
+  STORY_BOOK_DOCS_ARTIFACT: storybook-artifact.tar.gz
+
 jobs:
-  build: # job id
-    name: StoryBook Build and publish # job 名，不写默认使用 job id
-    runs-on: ubuntu-latest # 运行环境，可选 ubuntu-latest, ubuntu-18.04, ubuntu-16.04, windows-latest, windows-2019, windows-2016, macOS-latest, macOS-10.14
+  build-story-book:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js 20.x
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node.js environment
         uses: actions/setup-node@v3
         with:
           node-version: 20.x
-      - name: Install Yarn
-        run: npm install -g yarn
-      - name: Yarn install locked dependencies
-        run: |
-          yarn install --frozen-lockfile
-      - name: Generate storybook pages
-        run: |
-          yarn build-storybook
-      - name: Deploy
-        env:
-          GH_REF: github.com/peachest/vanguard.git # 仓库地址
-          ACCESS_TOKEN: ${{ secrets.PAGES }} # github token
-        run: |
-          git config --global user.name "peachest"
-          git config --global user.email "1938913473@qq.com"
-          git clone https://${GH_REF} .deploy_git
-          cd .deploy_git
-          git checkout -b storybook-pages
-          cd ../
-          mv .deploy_git/.git/ ./docs
-          cd ./docs
-          git add .
-          git commit -m ":construction_worker:CI built at `date +"%Y-%m-%d %H:%M:%S"`"
-          # GitHub Pages
-          git push --force --quiet "https://${ACCESS_TOKEN}@${GH_REF}" storybook-pages:storybook-pages
+          cache: yarn
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+      - name: Generate storybook docs
+        run: yarn build-storybook
+      - name: Tar storybook docs
+        run: tar -czvf ${STORY_BOOK_DOCS_ARTIFACT} ${STORY_BOOK_DOCS_DIR}
+      - name: Upload storybook docs artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: storybook-artifact
+          path: ./${{ env.STORY_BOOK_DOCS_ARTIFACT }}
+          if-no-files-found: error  # 找不到文件时报错
+
+  build-jekyll:
+    runs-on: ubuntu-latest
+    needs: [ "build-story-book" ]
+    steps:
+      - name: Download storybook artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: storybook-artifact
+      - name: unTar storybook docs
+        run: tar -xzvf ./${STORY_BOOK_DOCS_ARTIFACT}
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ${{ env.STORY_BOOK_DOCS_DIR }}
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v1
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: [ "build-jekyll" ]
+    steps:
+      - name: Deploy to Github Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
